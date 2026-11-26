@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>바통⁺ | AI 업무 인수인계</title>
+<meta name="description" content="자료를 넣으면 7단 구조 인수인계서가 자동으로 완성되는 공공기관용 AI 업무 인수인계 웹앱">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'%3EB%2B%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">바통<sup>+</sup></div>
+    <div class="brand-text">
+      <h1>바통<sup>+</sup> <span>AI 업무 인수인계</span></h1>
+      <p>자료만 넣으면 7단 인수인계서·점수·후임자 Q&amp;A까지 한 번에</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <span class="privacy-pill" title="자료와 API 키는 이 브라우저를 벗어나지 않습니다(직접 AI 분석을 켠 경우 제외)">
+      <span class="dot"></span> 브라우저 안에서만 처리
+    </span>
+    <button type="button" class="ghost" id="btnAiSettings">AI 정밀 분석</button>
+    <button type="button" class="ghost" id="btnReset">새로 작성</button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- ============ 좌: 자료·설정 ============ -->
+  <section class="col-left" aria-label="자료 입력">
+
+    <div class="card" id="metaCard">
+      <h2 class="card-title"><span class="step">0</span> 인수인계 기본 정보 <small>선택</small></h2>
+      <div class="meta-grid">
+        <label>기관·부서<input id="metaOrg" type="text" placeholder="예: 천안의료원 고객센터"></label>
+        <label>인계자<input id="metaFrom" type="text" placeholder="예: 강혜영"></label>
+        <label>인수자<input id="metaTo" type="text" placeholder="예: 김신입"></label>
+        <label>인계일<input id="metaDate" type="date"></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title"><span class="step">1</span> 자료 모으기 <small>여러 개 동시 투입 가능</small></h2>
+
+      <div class="samples">
+        <button type="button" class="sample-btn" data-sample="cnmc">
+          <b>천안의료원 콜센터장</b><span>공공의료 · 고객센터</span>
+        </button>
+        <button type="button" class="sample-btn" data-sample="gov">
+          <b>공공기관 행정담당자</b><span>지자체 · 복지정책과</span>
+        </button>
+      </div>
+
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="파일 선택 또는 끌어다 놓기">
+        <div class="dz-icon" aria-hidden="true">⇪</div>
+        <p><b>파일을 끌어다 놓거나 눌러서 선택</b></p>
+        <p class="hint">.txt · .md · .csv · .log · .json (여러 개 가능)</p>
+        <input type="file" id="fileInput" accept=".txt,.md,.markdown,.csv,.log,.json,text/plain,text/markdown,text/csv" multiple hidden>
+      </div>
+
+      <label class="paste-label" for="pasteInput">또는 업무 메모·메일·규정을 그대로 붙여넣기</label>
+      <textarea id="pasteInput" rows="5" placeholder="예)&#10;- 매월 5일까지 민원 분석 보고서 제출&#10;- 원무팀장 김희숙 실장 041-550-3110&#10;- ARS 멘트 갱신은 관리자 페이지에서 배포"></textarea>
+      <div class="paste-actions">
+        <button type="button" class="primary" id="btnAddPaste">자료로 추가</button>
+        <span class="hint" id="pasteCount"></span>
+      </div>
+
+      <div class="source-head">
+        <h3>투입된 자료 <span id="sourceCount" class="count">0</span></h3>
+        <button type="button" class="linkbtn" id="btnClearSources">전체 비우기</button>
+      </div>
+      <ul id="sourceList" class="source-list"><li class="empty">아직 자료가 없습니다. 샘플을 눌러 바로 체험해 보세요.</li></ul>
+
+      <!-- 개인정보 점검 -->
+      <div class="mask-panel" id="maskPanel">
+        <div class="mask-head">
+          <h3><span aria-hidden="true">🛡️</span> 개인정보·민감정보 자동 점검</h3>
+          <label class="switch">
+            <input type="checkbox" id="maskToggle" checked>
+            <span>AI 처리·화면 표시 전 마스킹</span>
+          </label>
+        </div>
+        <div class="mask-body">
+          <div class="mask-options">
+            <label class="inline">마스킹 강도
+              <select id="maskLevel">
+                <option value="partial">부분 마스킹 (끝 4자리 유지)</option>
+                <option value="full">전체 마스킹 (모두 가림)</option>
+              </select>
+            </label>
+            <span class="hint">탐지·마스킹은 브라우저 안에서만 실행되며 원문은 전송되지 않습니다.</span>
+          </div>
+          <div id="maskSummary" class="mask-summary"></div>
+          <details id="maskDetails" class="mask-details" hidden>
+            <summary>탐지 목록 보기</summary>
+            <ul id="maskList"></ul>
+          </details>
+        </div>
+      </div>
+
+      <div class="gen-actions">
+        <button type="button" class="primary xl" id="btnGenerate">인수인계서 생성</button>
+        <button type="button" class="ghost" id="btnAiRun" title="등록한 API 키로 한 번 더 정밀 분석합니다">AI 정밀 분석</button>
+      </div>
+      <p class="hint center" id="engineHint">API 키 없이도 내장 엔진으로 100% 동작합니다.</p>
+    </div>
+  </section>
+
+  <!-- ============ 우: 결과 ============ -->
+  <section class="col-right" aria-label="인수인계서">
+
+    <div id="emptyState" class="empty-state">
+      <div class="es-badge">7단 구조 · 자동 점수 · 후임자 Q&amp;A</div>
+      <h2>왼쪽에 자료를 넣고<br><b>‘인수인계서 생성’</b>을 눌러 보세요</h2>
+      <p>업무 메모, 규정, 메일, 엑셀에서 복사한 표까지 그대로 넣으면 됩니다.<br>개인정보는 자동으로 가려지고, 빠진 항목은 점수와 경고로 알려 드립니다.</p>
+      <div class="es-chips">
+        <span>① 핵심 업무 요약</span><span>② 긴급 과제 D-Day</span><span>③ 반복 루틴</span><span>④ 비상연락망</span><span>⑤ 트러블슈팅</span><span>⑥ 7일 온보딩</span><span>⑦ 리스크</span>
+      </div>
+      <div class="es-demo"><span>체험:</span>
+        <button type="button" class="sample-btn small" data-sample="cnmc">천안의료원 콜센터장</button>
+        <button type="button" class="sample-btn small" data-sample="gov">공공기관 행정담당자</button>
+      </div>
+    </div>
+
+    <div id="scoreCard" class="card score-card" hidden>
+      <div class="score-left">
+        <div class="gauge" id="gauge">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="g-bg" cx="60" cy="60" r="50"></circle>
+            <circle class="g-fg" id="gaugeFg" cx="60" cy="60" r="50"></circle>
+          </svg>
+          <div class="gauge-num"><b id="scoreNum">0</b><span>점</span></div>
+        </div>
+        <div class="score-meta">
+          <p class="score-title" id="scoreTitle">인계 완료도</p>
+          <p class="score-sub" id="scoreSub"></p>
+          <div class="score-bars" id="scoreBars"></div>
+        </div>
+      </div>
+      <div class="score-warn" id="scoreWarn"></div>
+    </div>
+
+    <div id="docToolbar" class="doc-toolbar" hidden>
+      <div class="doc-actions">
+        <button type="button" class="ghost sm" id="btnPrint">🖨 인쇄 / PDF</button>
+        <button type="button" class="ghost sm" id="btnWord">⬇ Word</button>
+        <button type="button" class="ghost sm" id="btnMd">📋 Markdown 복사</button>
+        <button type="button" class="ghost sm" id="btnJson">🗂 JSON 저장</button>
+      </div>
+      <div class="doc-actions right">
+        <button type="button" class="ghost sm" id="btnQa">💬 후임자 Q&amp;A</button>
+      </div>
+    </div>
+
+    <article id="docRoot" class="doc" hidden></article>
+    <div id="printOnly" class="print-only"></div>
+  </section>
+</main>
+
+<!-- 후임자 Q&A -->
+<button type="button" class="qa-fab" id="qaFab" hidden aria-expanded="false" aria-controls="qaPanel">
+  <span aria-hidden="true">💬</span> 후임자 Q&amp;A
+</button>
+
+<aside class="qa-panel" id="qaPanel" hidden aria-label="후임자 Q&A 시뮬레이터">
+  <header class="qa-head">
+    <div>
+      <b>후임자 Q&amp;A 시뮬레이터</b>
+      <span id="qaDocName">생성된 인수인계서 기반</span>
+    </div>
+    <button type="button" class="iconbtn" id="qaClose" aria-label="닫기">✕</button>
+  </header>
+  <div class="qa-log" id="qaLog" aria-live="polite"></div>
+  <div class="qa-chips" id="qaChips"></div>
+  <form class="qa-input" id="qaForm" autocomplete="off">
+    <input id="qaText" type="text" placeholder="예: 12월 5일까지 뭐가 있나요?" aria-label="질문 입력">
+    <button type="submit" class="primary sm">질문</button>
+  </form>
+</aside>
+
+<!-- AI 설정 -->
+<div class="modal" id="aiModal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="aiTitle">
+    <h3 id="aiTitle">AI 정밀 분석 (선택)</h3>
+    <p class="hint">키를 등록하면 내장 엔진 결과를 한 번 더 정리해 줍니다. 키는 <b>이 브라우저(localStorage)에만</b> 저장되고, 분석 시 해당 AI 제공사로만 전송됩니다. 등록하지 않아도 모든 기능이 동작합니다.</p>
+    <label>제공사
+      <select id="aiProvider">
+        <option value="openai">OpenAI (gpt-4o-mini)</option>
+        <option value="gemini">Google Gemini (gemini-2.5-flash)</option>
+      </select>
+    </label>
+    <label>API 키
+      <input id="aiKey" type="password" placeholder="sk-... / AIza..." autocomplete="off">
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="linkbtn" id="aiDelete">키 삭제</button>
+      <span class="spacer"></span>
+      <button type="button" class="ghost" id="aiCancel">닫기</button>
+      <button type="button" class="primary" id="aiSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="samples.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
