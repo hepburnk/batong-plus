@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>바통⁺ | AI 업무 인수인계</title>
+<title>이어줌 AI | 업무 인수인계</title>
 <meta name="description" content="자료를 넣으면 7단 구조 인수인계서가 자동으로 완성되는 공공기관용 AI 업무 인수인계 웹앱">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='43' font-size='30' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'%3EB%2B%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Ctext x='32' y='44' font-size='30' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'%3E%EC%9D%B4%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="topbar">
   <div class="brand">
-    <div class="logo" aria-hidden="true">바통<sup>+</sup></div>
+    <div class="logo" aria-hidden="true">이어줌</div>
     <div class="brand-text">
-      <h1>바통<sup>+</sup> <span>AI 업무 인수인계</span></h1>
+      <h1>이어줌 <sup>AI</sup> <span>업무 인수인계</span></h1>
       <p>자료만 넣으면 7단 인수인계서·점수·후임자 Q&amp;A까지 한 번에</p>
     </div>
   </div>
@@ -35,8 +35,8 @@
     <div class="card" id="metaCard">
       <h2 class="card-title"><span class="step">0</span> 인수인계 기본 정보 <small>선택</small></h2>
       <div class="meta-grid">
-        <label>기관·부서<input id="metaOrg" type="text" placeholder="예: 천안의료원 고객센터"></label>
-        <label>인계자<input id="metaFrom" type="text" placeholder="예: 강혜영"></label>
+        <label>기관·부서<input id="metaOrg" type="text" placeholder="예: 새솔시립병원 시설안전팀"></label>
+        <label>인계자<input id="metaFrom" type="text" placeholder="예: 서○○"></label>
         <label>인수자<input id="metaTo" type="text" placeholder="예: 김신입"></label>
         <label>인계일<input id="metaDate" type="date"></label>
       </div>
@@ -46,11 +46,11 @@
       <h2 class="card-title"><span class="step">1</span> 자료 모으기 <small>여러 개 동시 투입 가능</small></h2>
 
       <div class="samples">
-        <button type="button" class="sample-btn" data-sample="cnmc">
-          <b>천안의료원 콜센터장</b><span>공공의료 · 고객센터</span>
+        <button type="button" class="sample-btn" data-sample="hospital">
+          <b>새솔시립병원 시설안전팀</b><span>공공의료 · 시설안전</span>
         </button>
         <button type="button" class="sample-btn" data-sample="gov">
-          <b>공공기관 행정담당자</b><span>지자체 · 복지정책과</span>
+          <b>미래구청 민원실</b><span>지자체 · 민원행정</span>
         </button>
       </div>
 
@@ -62,7 +62,7 @@
       </div>
 
       <label class="paste-label" for="pasteInput">또는 업무 메모·메일·규정을 그대로 붙여넣기</label>
-      <textarea id="pasteInput" rows="5" placeholder="예)&#10;- 매월 5일까지 민원 분석 보고서 제출&#10;- 원무팀장 김희숙 실장 041-550-3110&#10;- ARS 멘트 갱신은 관리자 페이지에서 배포"></textarea>
+      <textarea id="pasteInput" rows="5" placeholder="예)&#10;- 매월 5일까지 용역비 정산서 제출&#10;- 구매팀장 김○○ 실장 041-000-0001&#10;- 관제 시스템 재시작은 관리자 페이지에서 실행"></textarea>
       <div class="paste-actions">
         <button type="button" class="primary" id="btnAddPaste">자료로 추가</button>
         <span class="hint" id="pasteCount"></span>
@@ -120,8 +120,8 @@
         <span>① 핵심 업무 요약</span><span>② 긴급 과제 D-Day</span><span>③ 반복 루틴</span><span>④ 비상연락망</span><span>⑤ 트러블슈팅</span><span>⑥ 7일 온보딩</span><span>⑦ 리스크</span>
       </div>
       <div class="es-demo"><span>체험:</span>
-        <button type="button" class="sample-btn small" data-sample="cnmc">천안의료원 콜센터장</button>
-        <button type="button" class="sample-btn small" data-sample="gov">공공기관 행정담당자</button>
+        <button type="button" class="sample-btn small" data-sample="hospital">새솔시립병원 시설안전팀</button>
+        <button type="button" class="sample-btn small" data-sample="gov">미래구청 민원실</button>
       </div>
     </div>
 

@@ -1,5 +1,5 @@
 /* ============================================================
-   바통⁺ (Batong Plus) — AI 업무 인수인계 웹앱
+   이어줌 AI — AI 업무 인수인계 웹앱
    빌드·서버 없이 동작하는 순수 HTML/CSS/JS.
    ① 개인정보 마스킹  ② 7단 인수인계서 자동 생성
    ③ 인계 완료도 점수  ④ 후임자 Q&A  ⑤ 내보내기
@@ -296,7 +296,7 @@
       for (var j = 0; j < near.length; j++) {
         var c = near[j];
         if (!c) continue;
-        if (!/^[가-힣]{2,4}$/.test(c)) continue;
+        if (!/^[가-힣○]{2,4}$/.test(c)) continue;
         if (TITLES.test(c) || ORG_TAIL.test(c)) continue;
         name = c; break;
       }
@@ -420,8 +420,8 @@
 
   function absorbMeta(line) {
     var m;
-    if (!state.meta.from && (m = line.match(/(?:작성자|인계자|담당자)\s*[:：]\s*([가-힣]{2,4})/))) state.meta.from = m[1];
-    if (!state.meta.to && (m = line.match(/인수자\s*[:：]\s*([가-힣]{2,4})/))) {
+    if (!state.meta.from && (m = line.match(/(?:작성자|인계자|담당자)\s*[:：]\s*([가-힣○]{2,4})/))) state.meta.from = m[1];
+    if (!state.meta.to && (m = line.match(/인수자\s*[:：]\s*([가-힣○]{2,4})/))) {
       if (!/미정/.test(m[1])) state.meta.to = m[1];
     }
     if ((!state.meta.date || state.meta.dateAuto) &&
@@ -695,7 +695,7 @@
 
     var html = '';
     html += '<div class="doc-head">' +
-      '<p class="kicker">업무 인수인계서 · BATONG PLUS</p>' +
+      '<p class="kicker">업무 인수인계서 · 이어줌 AI</p>' +
       '<h2>' + esc(title) + '</h2>' +
       '<div class="meta">' + (headBits.length ? headBits.map(function (x) { return '<span>' + x + '</span>'; }).join('') : '<span>기본 정보는 왼쪽 0번에서 입력할 수 있습니다</span>') + '</div>' +
       '<div class="badges">' +
@@ -820,7 +820,7 @@
     }
     html += sec('s7', '⑦', '리스크·주의사항', d.risks.length + '건', riskHtml);
 
-    html += '<p class="doc-foot">이 문서는 바통⁺가 투입 자료 ' + state.sources.length + '건을 분석해 자동 생성했습니다. ' +
+    html += '<p class="doc-foot">이 문서는 이어줌 AI가 투입 자료 ' + state.sources.length + '건을 분석해 자동 생성했습니다. ' +
       '개인정보 ' + (state.maskOn ? '는 마스킹된 상태' : '가 포함된 상태 — 배포 전 확인 필요') + '. 최종 내용은 인계자·인수자가 함께 확인하세요.</p>';
 
     $('#docRoot').innerHTML = html;
@@ -1098,7 +1098,7 @@
     L.push('# ' + ((m.org || '업무') + ' 인수인계서'));
     L.push('');
     L.push('- 인계자: ' + (m.from || '-') + ' / 인수자: ' + (m.to || '-') + ' / 인계일: ' + (m.date || '-'));
-    L.push('- 생성: ' + fmtD(d.generatedAt) + ' · 바통⁺ (자료 ' + state.sources.length + '건)');
+    L.push('- 생성: ' + fmtD(d.generatedAt) + ' · 이어줌 AI (자료 ' + state.sources.length + '건)');
     L.push('');
     L.push('## ① 핵심 업무 요약');
     d.summary.forEach(function (s) { L.push('- ' + s); });
@@ -1135,7 +1135,7 @@
     d.risks.forEach(function (r) { L.push('- (' + (r.level === 'high' ? '중대' : '주의') + ') ' + r.text); });
     L.push('');
     L.push('---');
-    L.push('인계 완료도 ' + d.score.score + '점 · 누락 항목 ' + d.score.failCount + '개 · 바통⁺');
+    L.push('인계 완료도 ' + d.score.score + '점 · 누락 항목 ' + d.score.failCount + '개 · 이어줌 AI');
     return L.join('\n');
   }
 
@@ -1154,7 +1154,7 @@
       '.box{border:1px solid #bbb;background:#f7f9fc;padding:8px 10px;margin:6px 0}';
     var h = [];
     h.push('<h1>' + esc((m.org || '업무') + ' 인수인계서') + '</h1>');
-    h.push('<p class="meta">인계자: ' + esc(m.from || '-') + ' &nbsp;|&nbsp; 인수자: ' + esc(m.to || '-') + ' &nbsp;|&nbsp; 인계일: ' + esc(m.date || '-') + '<br>생성일: ' + fmtD(d.generatedAt) + ' · 바통⁺ AI 업무 인수인계 · 인계 완료도 ' + d.score.score + '점</p>');
+    h.push('<p class="meta">인계자: ' + esc(m.from || '-') + ' &nbsp;|&nbsp; 인수자: ' + esc(m.to || '-') + ' &nbsp;|&nbsp; 인계일: ' + esc(m.date || '-') + '<br>생성일: ' + fmtD(d.generatedAt) + ' · 이어줌 AI 업무 인수인계 · 인계 완료도 ' + d.score.score + '점</p>');
 
     h.push('<h2>① 핵심 업무 요약</h2><ul>' + d.summary.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>');
 
@@ -1205,7 +1205,7 @@
       }).join('') + '</ul>');
     } else h.push('<p>없음</p>');
 
-    h.push('<hr><p class="tag">이 문서는 바통⁺가 자동 생성했습니다. 개인정보는 ' + (state.maskOn ? '마스킹된 상태입니다.' : '포함되어 있을 수 있으니 배포 전 확인하세요.') + '</p>');
+    h.push('<hr><p class="tag">이 문서는 이어줌 AI가 자동 생성했습니다. 개인정보는 ' + (state.maskOn ? '마스킹된 상태입니다.' : '포함되어 있을 수 있으니 배포 전 확인하세요.') + '</p>');
 
     return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">' +
       '<title>' + esc((m.org || '업무') + ' 인수인계서') + '</title><style>' + css + '</style></head><body>' + h.join('') + '</body></html>';
@@ -1521,7 +1521,7 @@
       var sb = ev.target.closest('[data-sample]');
       if (sb) {
         var id = sb.getAttribute('data-sample');
-        var samp = (window.BATONG_SAMPLES || []).filter(function (s) { return s.id === id; })[0];
+        var samp = (window.IEOJUM_SAMPLES || []).filter(function (s) { return s.id === id; })[0];
         if (!samp) return;
         // 같은 샘플이 이미 있으면 중복 투입하지 않는다
         if (state.sources.some(function (s) { return s.name === samp.name; })) {
@@ -1529,7 +1529,7 @@
         } else {
           addSource(samp.name, 'sample', samp.text);
           if (!state.meta.org) {
-            state.meta.org = id === 'cnmc' ? '천안의료원 고객센터' : '○○시청 복지정책과';
+            state.meta.org = id === 'hospital' ? '새솔시립병원 시설안전팀' : '미래구청 민원실';
             $('#metaOrg').value = state.meta.org;
           }
           saveWork();
